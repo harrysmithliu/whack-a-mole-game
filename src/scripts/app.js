@@ -1,6 +1,7 @@
 const GAME_DURATION = 30;
+const MOLE_SPAWN_INTERVAL = 530;
+const HIT_RESET_DELAY = 1000;
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
-const HIT_FLASH_DURATION = 180;
 
 const scoreElement = document.getElementById('score');
 const timerElement = document.getElementById('timer');
@@ -15,11 +16,16 @@ const gameState = {
   bestScore: Number(localStorage.getItem(BEST_SCORE_KEY)) || 0,
   timeLeft: GAME_DURATION,
   isRunning: false,
+  activeCellIndex: null,
   countdownIntervalId: null,
+  spawnIntervalId: null,
+  hitResetTimeoutId: null,
+  isResolvingHit: false,
 };
 
 function init() {
   renderStats();
+  resetBoard();
   updateStatus('Press “Start Game” to begin.');
   bindEvents();
 }
@@ -42,9 +48,12 @@ function startGame() {
   gameState.score = 0;
   gameState.timeLeft = GAME_DURATION;
   gameState.isRunning = true;
+  gameState.isResolvingHit = false;
   renderStats();
-  updateStatus('Game started. Tap the moles!');
+  updateStatus('Game started. Tap the visible mole!');
 
+  showRandomMole();
+  gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
   gameState.countdownIntervalId = window.setInterval(tick, 1000);
 }
 
@@ -60,6 +69,8 @@ function tick() {
 function endGame() {
   clearTimers();
   gameState.isRunning = false;
+  gameState.isResolvingHit = false;
+  resetBoard();
 
   if (gameState.score > gameState.bestScore) {
     gameState.bestScore = gameState.score;
@@ -75,55 +86,97 @@ function resetGame() {
   gameState.score = 0;
   gameState.timeLeft = GAME_DURATION;
   gameState.isRunning = false;
+  gameState.isResolvingHit = false;
   resetBoard();
   renderStats();
   updateStatus('Game reset. Press “Start Game” to play again.');
 }
 
+function showRandomMole() {
+  if (!gameState.isRunning || gameState.isResolvingHit || boardCells.length === 0) {
+    return;
+  }
+
+  resetBoard();
+
+  const nextIndex = pickRandomCellIndex();
+  const targetCell = boardCells[nextIndex];
+
+  gameState.activeCellIndex = nextIndex;
+  targetCell.classList.add('is-visible', 'is-active');
+}
+
 function hitMole(index) {
+  if (!gameState.isRunning || gameState.isResolvingHit || index !== gameState.activeCellIndex) {
+    return;
+  }
+
   const targetCell = boardCells[index];
 
   if (!targetCell) {
     return;
   }
 
-  if (targetCell.dataset.hitTimeoutId) {
-    window.clearTimeout(Number(targetCell.dataset.hitTimeoutId));
-  }
+  gameState.isResolvingHit = true;
+  clearSpawnInterval();
 
+  targetCell.classList.remove('is-active');
   targetCell.classList.add('is-hit');
-  const hitTimeoutId = window.setTimeout(() => {
-    targetCell.classList.remove('is-hit');
-    delete targetCell.dataset.hitTimeoutId;
-  }, HIT_FLASH_DURATION);
-
-  targetCell.dataset.hitTimeoutId = String(hitTimeoutId);
-
-  if (!gameState.isRunning) {
-    return;
-  }
 
   gameState.score += 1;
   renderStats();
   updateStatus(`Nice! Score: ${gameState.score}.`);
+
+  gameState.hitResetTimeoutId = window.setTimeout(() => {
+    resetBoard();
+    gameState.isResolvingHit = false;
+
+    if (!gameState.isRunning) {
+      return;
+    }
+
+    showRandomMole();
+    gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
+  }, HIT_RESET_DELAY);
+}
+
+function pickRandomCellIndex() {
+  let randomIndex = Math.floor(Math.random() * boardCells.length);
+
+  if (boardCells.length > 1 && randomIndex === gameState.activeCellIndex) {
+    randomIndex = (randomIndex + 1) % boardCells.length;
+  }
+
+  return randomIndex;
 }
 
 function clearTimers() {
+  clearSpawnInterval();
+
   if (gameState.countdownIntervalId) {
     window.clearInterval(gameState.countdownIntervalId);
     gameState.countdownIntervalId = null;
+  }
+
+  if (gameState.hitResetTimeoutId) {
+    window.clearTimeout(gameState.hitResetTimeoutId);
+    gameState.hitResetTimeoutId = null;
+  }
+}
+
+function clearSpawnInterval() {
+  if (gameState.spawnIntervalId) {
+    window.clearInterval(gameState.spawnIntervalId);
+    gameState.spawnIntervalId = null;
   }
 }
 
 function resetBoard() {
   boardCells.forEach((cell) => {
-    cell.classList.remove('is-hit');
-
-    if (cell.dataset.hitTimeoutId) {
-      window.clearTimeout(Number(cell.dataset.hitTimeoutId));
-      delete cell.dataset.hitTimeoutId;
-    }
+    cell.classList.remove('is-visible', 'is-active', 'is-hit');
   });
+
+  gameState.activeCellIndex = null;
 }
 
 function renderStats() {
