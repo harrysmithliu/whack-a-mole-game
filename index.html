@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Responsive browser-based Whack-a-Mole game built with HTML, CSS, and JavaScript."
+    />
+    <title>Whack-a-Mole Game</title>
+    <link rel="stylesheet" href="./src/styles/main.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Browser Game Demo</p>
+          <h1>Whack-a-Mole</h1>
+        </div>
+
+        <div class="stats" aria-label="Game stats">
+          <div class="stat-card">
+            <span class="stat-label">Score</span>
+            <strong id="score">0</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Time</span>
+            <strong id="timer">30</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Best</span>
+            <strong id="best-score">0</strong>
+          </div>
+        </div>
+      </header>
+
+      <section class="controls" aria-label="Game controls">
+        <button id="start-button" class="button primary" type="button">
+          Start Game
+        </button>
+        <button id="reset-button" class="button secondary" type="button">
+          Reset
+        </button>
+      </section>
+
+      <section class="game-panel">
+        <div
+          id="game-board"
+          class="game-board"
+          aria-label="Whack-a-Mole board"
+        >
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+          <div class="board-cell" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="status-panel" aria-live="polite">
+        <p id="status-text">Press “Start Game” to begin.</p>
+      </section>
+    </main>
+
+    <script src="./src/scripts/app.js" defer></script>
+  </body>
+</html>
