@@ -144,7 +144,7 @@ h1 {
   position: relative;
   min-height: clamp(180px, 22vw, 360px);
   border-radius: 22px;
-  overflow: hidden;
+  overflow: visible;
   cursor: default;
 }
 
@@ -162,7 +162,7 @@ h1 {
 .board-cell::before {
   bottom: -10%;
   width: 92%;
-  height: 92%;
+  height: 112%;
   background-image: url("../../assets/images/mole_3.png");
   background-position: center bottom;
   background-size: 80% auto;
@@ -180,12 +180,23 @@ h1 {
   z-index: 1;
 }
 
-.board-cell.is-hit::before {
+.board-cell.has-mole.is-hit::before {
   background-image: url("../../assets/images/mole_4.png");
   opacity: 1;
 }
 
-.board-cell.is-visible::before {
+.board-cell.has-princess::before {
+  background-image: url("../../assets/images/princess_3.png");
+  opacity: 1;
+  bottom: 3%;
+}
+
+.board-cell.has-princess.is-hit::before {
+  background-image: url("../../assets/images/princess_4.png");
+  opacity: 1;
+}
+
+.board-cell.has-mole::before {
   opacity: 1;
 }
 

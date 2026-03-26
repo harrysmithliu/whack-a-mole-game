@@ -1,5 +1,6 @@
 const GAME_DURATION = 30;
 const MOLE_SPAWN_INTERVAL = 530;
+const PRINCESS_SPAWN_PROBABILITY = 0.45;
 const HIT_RESET_DELAY = 1000;
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
 
@@ -17,6 +18,7 @@ const gameState = {
   timeLeft: GAME_DURATION,
   isRunning: false,
   activeCellIndex: null,
+  activeCharacterType: null,
   countdownIntervalId: null,
   spawnIntervalId: null,
   hitResetTimeoutId: null,
@@ -101,9 +103,12 @@ function showRandomMole() {
 
   const nextIndex = pickRandomCellIndex();
   const targetCell = boardCells[nextIndex];
+  const nextCharacterType = Math.random() < PRINCESS_SPAWN_PROBABILITY ? 'princess' : 'mole';
 
   gameState.activeCellIndex = nextIndex;
-  targetCell.classList.add('is-visible', 'is-active');
+  gameState.activeCharacterType = nextCharacterType;
+  targetCell.classList.add('is-active');
+  targetCell.classList.add(nextCharacterType === 'princess' ? 'has-princess' : 'has-mole');
 }
 
 function hitMole(index) {
@@ -123,9 +128,15 @@ function hitMole(index) {
   targetCell.classList.remove('is-active');
   targetCell.classList.add('is-hit');
 
-  gameState.score += 1;
+  if (gameState.activeCharacterType === 'princess') {
+    gameState.score -= 1;
+    updateStatus(`Oops! Princess hit. Score: ${gameState.score}.`);
+  } else {
+    gameState.score += 1;
+    updateStatus(`Nice! Score: ${gameState.score}.`);
+  }
+
   renderStats();
-  updateStatus(`Nice! Score: ${gameState.score}.`);
 
   gameState.hitResetTimeoutId = window.setTimeout(() => {
     resetBoard();
@@ -173,10 +184,11 @@ function clearSpawnInterval() {
 
 function resetBoard() {
   boardCells.forEach((cell) => {
-    cell.classList.remove('is-visible', 'is-active', 'is-hit');
+    cell.classList.remove('is-active', 'is-hit', 'has-mole', 'has-princess');
   });
 
   gameState.activeCellIndex = null;
+  gameState.activeCharacterType = null;
 }
 
 function renderStats() {
