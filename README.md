@@ -6,6 +6,8 @@ A bright, playful browser game built with plain HTML, CSS, and JavaScript. This 
 
 **Live Demo:** `https://harrysmithliu.github.io/whack-a-mole-game/`
 
+**Built from zero with AI assistance, this project was fully recreated based on implementation experience from an earlier version I had completed before.**
+
 ## Why This Project Stands Out
 
 - Clean, responsive one-page game experience
