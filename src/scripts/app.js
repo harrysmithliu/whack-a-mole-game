@@ -1,6 +1,6 @@
 const GAME_DURATION = 30;
 const MOLE_SPAWN_INTERVAL = 530;
-const PRINCESS_SPAWN_PROBABILITY = 0.45;
+const PRINCESS_SPAWN_PROBABILITY = 0.35;
 const HIT_RESET_DELAY = 1000;
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
 

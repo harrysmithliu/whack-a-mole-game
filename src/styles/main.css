@@ -21,9 +21,15 @@ body {
   margin: 0;
   padding: 0;
   min-height: 100%;
+  height: 100%;
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: linear-gradient(180deg, #fcf8f1 0%, #f4ede1 100%);
   color: var(--text);
+}
+
+body {
+  min-height: 100dvh;
+  overflow: hidden;
 }
 
 button,
@@ -38,7 +44,12 @@ button {
 .app-shell {
   width: min(1100px, calc(100% - 32px));
   margin: 0 auto;
-  padding: 24px 0 48px;
+  height: 100dvh;
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  gap: 12px;
+  padding: 16px 0 20px;
 }
 
 .topbar {
@@ -46,7 +57,6 @@ button {
   justify-content: space-between;
   gap: 20px;
   align-items: flex-start;
-  margin-bottom: 20px;
 }
 
 .eyebrow {
@@ -86,7 +96,6 @@ h1 {
 .controls {
   display: flex;
   gap: 12px;
-  margin-bottom: 20px;
 }
 
 .button {
@@ -121,18 +130,25 @@ h1 {
 }
 
 .game-panel {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--panel);
   border-radius: var(--radius-lg);
   box-shadow: var(--board-shadow);
-  padding: clamp(16px, 3vw, 28px);
+  padding: clamp(12px, 1.8vw, 18px);
 }
 
 .game-board {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(12px, 2vw, 20px);
-  min-height: clamp(520px, 72vw, 1220px);
-  padding: clamp(18px, 2.4vw, 28px);
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: clamp(8px, 1.2vw, 14px);
+  width: min(100%, calc(100dvh - 280px));
+  aspect-ratio: 1 / 1;
+  min-height: 0;
+  padding: clamp(10px, 1.6vw, 18px);
   border-radius: 22px;
   background-image: url("../../assets/images/background.png");
   background-position: center;
@@ -142,7 +158,7 @@ h1 {
 
 .board-cell {
   position: relative;
-  min-height: clamp(180px, 22vw, 360px);
+  min-height: 0;
   border-radius: 22px;
   overflow: visible;
   cursor: default;
@@ -205,8 +221,7 @@ h1 {
 }
 
 .status-panel {
-  margin-top: 16px;
-  padding: 18px 20px;
+  padding: 14px 18px;
   border-radius: var(--radius-md);
   background: rgba(255, 250, 242, 0.85);
   box-shadow: var(--card-shadow);
@@ -218,17 +233,44 @@ h1 {
 }
 
 @media (max-width: 768px) {
+  body {
+    overflow: auto;
+  }
+
   .app-shell {
     width: min(100% - 20px, 1100px);
+    height: auto;
+    min-height: 100dvh;
+    display: block;
     padding-top: 18px;
+    padding-bottom: 24px;
   }
 
   .topbar {
     flex-direction: column;
+    margin-bottom: 16px;
   }
 
   .stats {
     justify-content: flex-start;
+  }
+
+  .controls {
+    margin-bottom: 16px;
+  }
+
+  .game-panel {
+    display: block;
+  }
+
+  .game-board {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+  }
+
+  .status-panel {
+    margin-top: 16px;
   }
 }
 
