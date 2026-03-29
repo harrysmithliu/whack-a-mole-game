@@ -32,6 +32,13 @@ body {
   overflow: hidden;
 }
 
+.viewport-stage {
+  position: relative;
+  width: 100vw;
+  height: 100dvh;
+  overflow: hidden;
+}
+
 button,
 img {
   display: block;
@@ -42,14 +49,18 @@ button {
 }
 
 .app-shell {
-  width: min(1100px, calc(100% - 32px));
-  margin: 0 auto;
-  height: 100dvh;
-  min-height: 100dvh;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(1100px, calc(100vw - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   gap: 12px;
   padding: 16px 0 20px;
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .topbar {
@@ -120,7 +131,6 @@ button {
 
 .game-panel {
   position: relative;
-  min-height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -136,9 +146,8 @@ button {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-rows: repeat(3, minmax(0, 1fr));
   gap: clamp(8px, 1.2vw, 14px);
-  width: min(100%, calc(100dvh - 280px));
+  width: min(100%, 900px);
   aspect-ratio: 1 / 1;
-  min-height: 0;
   padding: clamp(10px, 1.6vw, 18px);
   border-radius: 22px;
   background-image: url("../../assets/images/background.png");
@@ -243,15 +252,8 @@ button {
 }
 
 @media (max-width: 768px) {
-  body {
-    overflow: auto;
-  }
-
   .app-shell {
     width: min(100% - 20px, 1100px);
-    height: auto;
-    min-height: 100dvh;
-    display: block;
     padding-top: 18px;
     padding-bottom: 24px;
   }
@@ -286,16 +288,6 @@ button {
   .controls {
     gap: 10px;
     margin-top: 12px;
-  }
-
-  .game-panel {
-    display: block;
-  }
-
-  .game-board {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1 / 1;
   }
 
   .status-overlay {

@@ -5,6 +5,8 @@ const HIT_RESET_DELAY = 1000;
 const STATUS_OVERLAY_DURATION = 1500;
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
 
+const viewportStageElement = document.getElementById('viewport-stage');
+const appShellElement = document.getElementById('app-shell');
 const scoreElement = document.getElementById('score');
 const timerElement = document.getElementById('timer');
 const bestScoreElement = document.getElementById('best-score');
@@ -32,6 +34,7 @@ function init() {
   resetBoard();
   bindEvents();
   showStatusOverlay('Press Start Game', false);
+  updateViewportScale();
 }
 
 function bindEvents() {
@@ -41,6 +44,14 @@ function bindEvents() {
   boardCells.forEach((cell, index) => {
     cell.addEventListener('pointerdown', () => hitMole(index));
   });
+
+  window.addEventListener('resize', updateViewportScale);
+  window.addEventListener('orientationchange', updateViewportScale);
+
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', updateViewportScale);
+    window.visualViewport.addEventListener('scroll', updateViewportScale);
+  }
 }
 
 function startGame() {
@@ -235,6 +246,32 @@ function hideStatusOverlay() {
     window.clearTimeout(gameState.statusOverlayTimeoutId);
     gameState.statusOverlayTimeoutId = null;
   }
+}
+
+function updateViewportScale() {
+  if (!viewportStageElement || !appShellElement) {
+    return;
+  }
+
+  const viewport = window.visualViewport;
+  const viewportWidth = viewport ? viewport.width : window.innerWidth;
+  const viewportHeight = viewport ? viewport.height : window.innerHeight;
+  const viewportOffsetLeft = viewport ? viewport.offsetLeft : 0;
+  const viewportOffsetTop = viewport ? viewport.offsetTop : 0;
+
+  appShellElement.style.left = `${viewportOffsetLeft + viewportWidth / 2}px`;
+  appShellElement.style.top = `${viewportOffsetTop + viewportHeight / 2}px`;
+  appShellElement.style.transform = 'translate(-50%, -50%) scale(1)';
+
+  const naturalWidth = appShellElement.offsetWidth;
+  const naturalHeight = appShellElement.offsetHeight;
+
+  if (!naturalWidth || !naturalHeight) {
+    return;
+  }
+
+  const scale = Math.min(1, viewportWidth / naturalWidth, viewportHeight / naturalHeight);
+  appShellElement.style.transform = `translate(-50%, -50%) scale(${scale})`;
 }
 
 init();

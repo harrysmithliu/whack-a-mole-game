@@ -11,52 +11,54 @@
     <link rel="stylesheet" href="./src/styles/main.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <header class="topbar">
-        <div class="stats" aria-label="Game stats">
-          <div class="stat-card">
-            <span class="stat-label">Score</span>
-            <strong id="score">0</strong>
+    <div id="viewport-stage" class="viewport-stage">
+      <main id="app-shell" class="app-shell">
+        <header class="topbar">
+          <div class="stats" aria-label="Game stats">
+            <div class="stat-card">
+              <span class="stat-label">Score</span>
+              <strong id="score">0</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Time</span>
+              <strong id="timer">30</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Best</span>
+              <strong id="best-score">0</strong>
+            </div>
           </div>
-          <div class="stat-card">
-            <span class="stat-label">Time</span>
-            <strong id="timer">30</strong>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Best</span>
-            <strong id="best-score">0</strong>
-          </div>
-        </div>
-      </header>
+        </header>
 
-      <section class="game-panel">
-        <div
-          id="game-board"
-          class="game-board"
-          aria-label="Whack-a-Mole board"
-        >
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div class="board-cell" aria-hidden="true"></div>
-          <div id="status-overlay" class="status-overlay" aria-live="polite" aria-atomic="true"></div>
-        </div>
-      </section>
+        <section class="game-panel">
+          <div
+            id="game-board"
+            class="game-board"
+            aria-label="Whack-a-Mole board"
+          >
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div class="board-cell" aria-hidden="true"></div>
+            <div id="status-overlay" class="status-overlay" aria-live="polite" aria-atomic="true"></div>
+          </div>
+        </section>
 
-      <section class="controls" aria-label="Game controls">
-        <button id="start-button" class="button primary" type="button">
-          Start Game
-        </button>
-        <button id="reset-button" class="button secondary" type="button">
-          Reset
-        </button>
-      </section>
-    </main>
+        <section class="controls" aria-label="Game controls">
+          <button id="start-button" class="button primary" type="button">
+            Start Game
+          </button>
+          <button id="reset-button" class="button secondary" type="button">
+            Reset
+          </button>
+        </section>
+      </main>
+    </div>
 
     <script src="./src/scripts/app.js" defer></script>
   </body>
