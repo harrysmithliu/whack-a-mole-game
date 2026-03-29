@@ -6,6 +6,14 @@ const STATUS_OVERLAY_DURATION = 1500;
 const START_COUNTDOWN_STEP_DURATION = 600;
 const START_COUNTDOWN_STEPS = ['3', '2', '1', 'Go'];
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
+const SOUND_FILES = {
+  bgLoop: './assets/sounds/bg-loop.mp3',
+  gameStart: './assets/sounds/game-start.mp3',
+  pop: './assets/sounds/pop.mp3',
+  hitMole: './assets/sounds/hit-mole.mp3',
+  hitPrincess: './assets/sounds/hit-princess.mp3',
+  gameOver: './assets/sounds/game-over.mp3',
+};
 
 const viewportStageElement = document.getElementById('viewport-stage');
 const appShellElement = document.getElementById('app-shell');
@@ -16,6 +24,7 @@ const statusOverlayElement = document.getElementById('status-overlay');
 const startButton = document.getElementById('start-button');
 const resetButton = document.getElementById('reset-button');
 const boardCells = Array.from(document.querySelectorAll('.board-cell'));
+const sounds = createSoundBank();
 
 const gameState = {
   score: 0,
@@ -70,6 +79,7 @@ function startGame() {
   gameState.isStarting = true;
   gameState.isResolvingHit = false;
   renderStats();
+  playSound(sounds.gameStart);
   runStartCountdown();
 }
 
@@ -88,6 +98,7 @@ function endGame() {
   gameState.isStarting = false;
   gameState.isResolvingHit = false;
   resetBoard();
+  stopBackgroundLoop();
 
   if (gameState.score > gameState.bestScore) {
     gameState.bestScore = gameState.score;
@@ -95,6 +106,7 @@ function endGame() {
   }
 
   renderStats();
+  playSound(sounds.gameOver);
   showStatusOverlay('Game Over, Press Start Game to Play Again', false);
 }
 
@@ -107,6 +119,7 @@ function resetGame() {
   gameState.isResolvingHit = false;
   resetBoard();
   renderStats();
+  stopBackgroundLoop();
   showStatusOverlay('Press Start Game', false);
 }
 
@@ -125,6 +138,7 @@ function showRandomMole() {
   gameState.activeCharacterType = nextCharacterType;
   targetCell.classList.add('is-active');
   targetCell.classList.add(nextCharacterType === 'princess' ? 'has-princess' : 'has-mole');
+  playSound(sounds.pop);
 }
 
 function hitMole(index) {
@@ -146,8 +160,10 @@ function hitMole(index) {
 
   if (gameState.activeCharacterType === 'princess') {
     gameState.score -= 1;
+    playSound(sounds.hitPrincess);
   } else {
     gameState.score += 1;
+    playSound(sounds.hitMole);
   }
 
   renderStats();
@@ -283,9 +299,81 @@ function beginGameplay() {
   gameState.startCountdownTimeoutId = null;
   gameState.isStarting = false;
   gameState.isRunning = true;
+  startBackgroundLoop();
   showRandomMole();
   gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
   gameState.countdownIntervalId = window.setInterval(tick, 1000);
+}
+
+function createSoundBank() {
+  const bgLoop = new Audio(SOUND_FILES.bgLoop);
+  bgLoop.loop = true;
+  bgLoop.preload = 'auto';
+  bgLoop.volume = 0.4;
+
+  const gameStart = new Audio(SOUND_FILES.gameStart);
+  gameStart.preload = 'auto';
+  gameStart.volume = 0.8;
+
+  const pop = new Audio(SOUND_FILES.pop);
+  pop.preload = 'auto';
+  pop.volume = 0.75;
+
+  const hitMole = new Audio(SOUND_FILES.hitMole);
+  hitMole.preload = 'auto';
+  hitMole.volume = 0.85;
+
+  const hitPrincess = new Audio(SOUND_FILES.hitPrincess);
+  hitPrincess.preload = 'auto';
+  hitPrincess.volume = 0.85;
+
+  const gameOver = new Audio(SOUND_FILES.gameOver);
+  gameOver.preload = 'auto';
+  gameOver.volume = 0.85;
+
+  return {
+    bgLoop,
+    gameStart,
+    pop,
+    hitMole,
+    hitPrincess,
+    gameOver,
+  };
+}
+
+function playSound(audio) {
+  if (!audio) {
+    return;
+  }
+
+  audio.currentTime = 0;
+  const playPromise = audio.play();
+
+  if (playPromise && typeof playPromise.catch === 'function') {
+    playPromise.catch(() => {});
+  }
+}
+
+function startBackgroundLoop() {
+  if (!sounds.bgLoop) {
+    return;
+  }
+
+  sounds.bgLoop.currentTime = 0;
+  const playPromise = sounds.bgLoop.play();
+
+  if (playPromise && typeof playPromise.catch === 'function') {
+    playPromise.catch(() => {});
+  }
+}
+
+function stopBackgroundLoop() {
+  if (!sounds.bgLoop) {
+    return;
+  }
+
+  sounds.bgLoop.pause();
+  sounds.bgLoop.currentTime = 0;
 }
 
 function updateViewportScale() {
