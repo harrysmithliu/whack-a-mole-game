@@ -1,11 +1,31 @@
 const GAME_DURATION = 30;
-const MOLE_SPAWN_INTERVAL = 530;
-const PRINCESS_SPAWN_PROBABILITY = 0.35;
-const HIT_RESET_DELAY = 1000;
 const STATUS_OVERLAY_DURATION = 1500;
 const START_COUNTDOWN_STEP_DURATION = 600;
 const START_COUNTDOWN_STEPS = ['3', '2', '1', 'Go'];
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
+const DIFFICULTY_LEVELS = [
+  {
+    name: 'Easy',
+    key: 'easy',
+    spawnInterval: 700,
+    hitResetDelay: 1200,
+    princessSpawnProbability: 0.2,
+  },
+  {
+    name: 'Medium',
+    key: 'medium',
+    spawnInterval: 530,
+    hitResetDelay: 1000,
+    princessSpawnProbability: 0.35,
+  },
+  {
+    name: 'Hard',
+    key: 'hard',
+    spawnInterval: 380,
+    hitResetDelay: 800,
+    princessSpawnProbability: 0.5,
+  },
+];
 const SOUND_FILES = {
   bgLoop: './assets/sounds/bg-loop.mp3',
   gameStart: './assets/sounds/game-start.mp3',
@@ -23,6 +43,8 @@ const bestScoreElement = document.getElementById('best-score');
 const statusOverlayElement = document.getElementById('status-overlay');
 const startButton = document.getElementById('start-button');
 const resetButton = document.getElementById('reset-button');
+const difficultyMenuElement = document.getElementById('difficulty-menu');
+const difficultyOptionElements = Array.from(document.querySelectorAll('.difficulty-option'));
 const boardCells = Array.from(document.querySelectorAll('.board-cell'));
 const sounds = createSoundBank();
 
@@ -40,6 +62,7 @@ const gameState = {
   startCountdownTimeoutId: null,
   isResolvingHit: false,
   isStarting: false,
+  selectedDifficulty: DIFFICULTY_LEVELS[1],
 };
 
 function init() {
@@ -53,6 +76,9 @@ function init() {
 function bindEvents() {
   startButton.addEventListener('click', startGame);
   resetButton.addEventListener('click', resetGame);
+  difficultyOptionElements.forEach((option) => {
+    option.addEventListener('click', () => handleDifficultySelect(option.dataset.difficulty));
+  });
 
   boardCells.forEach((cell, index) => {
     cell.addEventListener('pointerdown', () => hitMole(index));
@@ -65,6 +91,8 @@ function bindEvents() {
     window.visualViewport.addEventListener('resize', updateViewportScale);
     window.visualViewport.addEventListener('scroll', updateViewportScale);
   }
+
+  document.addEventListener('pointerdown', handleDocumentPointerDown);
 }
 
 function startGame() {
@@ -72,12 +100,22 @@ function startGame() {
     return;
   }
 
+  toggleDifficultyMenu();
+}
+
+function handleDifficultySelect(difficultyKey) {
+  const selectedDifficulty =
+    DIFFICULTY_LEVELS.find((difficulty) => difficulty.key === difficultyKey) || DIFFICULTY_LEVELS[1];
+
+  hideDifficultyMenu();
+
   resetBoard();
   gameState.score = 0;
   gameState.timeLeft = GAME_DURATION;
   gameState.isRunning = false;
   gameState.isStarting = true;
   gameState.isResolvingHit = false;
+  gameState.selectedDifficulty = selectedDifficulty;
   renderStats();
   playSound(sounds.gameStart);
   runStartCountdown();
@@ -120,6 +158,7 @@ function resetGame() {
   resetBoard();
   renderStats();
   stopBackgroundLoop();
+  hideDifficultyMenu();
   showStatusOverlay('Press Start Game', false);
 }
 
@@ -132,7 +171,8 @@ function showRandomMole() {
 
   const nextIndex = pickRandomCellIndex();
   const targetCell = boardCells[nextIndex];
-  const nextCharacterType = Math.random() < PRINCESS_SPAWN_PROBABILITY ? 'princess' : 'mole';
+  const nextCharacterType =
+    Math.random() < gameState.selectedDifficulty.princessSpawnProbability ? 'princess' : 'mole';
 
   gameState.activeCellIndex = nextIndex;
   gameState.activeCharacterType = nextCharacterType;
@@ -177,8 +217,8 @@ function hitMole(index) {
     }
 
     showRandomMole();
-    gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
-  }, HIT_RESET_DELAY);
+    gameState.spawnIntervalId = window.setInterval(showRandomMole, gameState.selectedDifficulty.spawnInterval);
+  }, gameState.selectedDifficulty.hitResetDelay);
 }
 
 function pickRandomCellIndex() {
@@ -220,6 +260,42 @@ function clearSpawnInterval() {
     window.clearInterval(gameState.spawnIntervalId);
     gameState.spawnIntervalId = null;
   }
+}
+
+function toggleDifficultyMenu() {
+  if (!difficultyMenuElement || !startButton) {
+    return;
+  }
+
+  const willOpen = difficultyMenuElement.hidden;
+  difficultyMenuElement.hidden = !willOpen;
+  startButton.setAttribute('aria-expanded', String(willOpen));
+}
+
+function hideDifficultyMenu() {
+  if (!difficultyMenuElement || !startButton) {
+    return;
+  }
+
+  difficultyMenuElement.hidden = true;
+  startButton.setAttribute('aria-expanded', 'false');
+}
+
+function handleDocumentPointerDown(event) {
+  if (!difficultyMenuElement || difficultyMenuElement.hidden) {
+    return;
+  }
+
+  const target = event.target;
+  if (!(target instanceof Node)) {
+    return;
+  }
+
+  if (difficultyMenuElement.contains(target) || startButton.contains(target)) {
+    return;
+  }
+
+  hideDifficultyMenu();
 }
 
 function resetBoard() {
@@ -301,7 +377,7 @@ function beginGameplay() {
   gameState.isRunning = true;
   startBackgroundLoop();
   showRandomMole();
-  gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
+  gameState.spawnIntervalId = window.setInterval(showRandomMole, gameState.selectedDifficulty.spawnInterval);
   gameState.countdownIntervalId = window.setInterval(tick, 1000);
 }
 

@@ -30,6 +30,8 @@
           </div>
         </header>
 
+        <p class="designed-by">Designed by harrysmithliu</p>
+
         <section class="game-panel">
           <div
             id="game-board"
@@ -50,9 +52,22 @@
         </section>
 
         <section class="controls" aria-label="Game controls">
-          <button id="start-button" class="button primary" type="button">
-            Start Game
-          </button>
+          <div class="start-control">
+            <button id="start-button" class="button primary" type="button" aria-haspopup="true" aria-expanded="false">
+              Start Game
+            </button>
+            <div id="difficulty-menu" class="difficulty-menu" aria-label="Difficulty selection" hidden>
+              <button class="difficulty-option" type="button" data-difficulty="hard">
+                Hard
+              </button>
+              <button class="difficulty-option" type="button" data-difficulty="medium">
+                Medium
+              </button>
+              <button class="difficulty-option" type="button" data-difficulty="easy">
+                Easy
+              </button>
+            </div>
+          </div>
           <button id="reset-button" class="button secondary" type="button">
             Reset
           </button>

@@ -98,6 +98,10 @@ button {
   gap: 12px;
 }
 
+.start-control {
+  position: relative;
+}
+
 .button {
   border: none;
   border-radius: 999px;
@@ -127,6 +131,43 @@ button {
 .button.secondary {
   background: var(--secondary);
   color: var(--text);
+}
+
+.difficulty-menu {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 10px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 180px;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(255, 250, 242, 0.96);
+  box-shadow: var(--board-shadow);
+  z-index: 6;
+}
+
+.difficulty-menu[hidden] {
+  display: none;
+}
+
+.difficulty-option {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 16px;
+  background: rgba(237, 228, 215, 0.95);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.difficulty-option:hover {
+  background: rgba(255, 184, 77, 0.85);
+}
+
+.difficulty-option:active {
+  transform: translateY(1px);
 }
 
 .game-panel {
@@ -251,6 +292,14 @@ button {
   transform: translateX(-50%) translateY(0);
 }
 
+.designed-by {
+  margin: 0;
+  font-size: 0.86rem;
+  color: rgba(125, 106, 88, 0.92);
+  text-align: center;
+  letter-spacing: 0.08em;
+}
+
 .status-overlay.is-countdown {
   top: 50%;
   bottom: auto;
@@ -307,6 +356,11 @@ button {
     margin-top: 12px;
   }
 
+  .designed-by {
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+  }
+
   .status-overlay {
     bottom: 14px;
     max-width: calc(100% - 28px);
@@ -328,5 +382,10 @@ button {
     min-width: 0;
     padding: 12px 14px;
     font-size: 0.95rem;
+  }
+
+  .difficulty-menu {
+    min-width: 150px;
+    padding: 8px;
   }
 }
