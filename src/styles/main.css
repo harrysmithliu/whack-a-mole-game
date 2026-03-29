@@ -377,11 +377,19 @@ button {
     flex-wrap: nowrap;
   }
 
+  .start-control {
+    flex: 1 1 0;
+  }
+
   .button {
     flex: 1 1 0;
     min-width: 0;
     padding: 12px 14px;
     font-size: 0.95rem;
+  }
+
+  #start-button {
+    width: 100%;
   }
 
   .difficulty-menu {
