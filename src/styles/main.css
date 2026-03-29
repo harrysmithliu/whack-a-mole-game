@@ -251,6 +251,23 @@ button {
   transform: translateX(-50%) translateY(0);
 }
 
+.status-overlay.is-countdown {
+  top: 50%;
+  bottom: auto;
+  transform: translateX(-50%) translateY(-50%) scale(0.92);
+  color: rgba(64, 40, 18, 0.98);
+  font-size: clamp(3.8rem, 10vw, 7rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-shadow:
+    0 3px 12px rgba(255, 250, 242, 0.8),
+    0 0 24px rgba(255, 210, 120, 0.35);
+}
+
+.status-overlay.is-countdown.is-visible {
+  transform: translateX(-50%) translateY(-50%) scale(1);
+}
+
 @media (max-width: 768px) {
   .app-shell {
     width: min(100% - 20px, 1100px);
@@ -294,6 +311,10 @@ button {
     bottom: 14px;
     max-width: calc(100% - 28px);
     font-size: clamp(1.2rem, 6vw, 1.8rem);
+  }
+
+  .status-overlay.is-countdown {
+    font-size: clamp(3.2rem, 16vw, 5.4rem);
   }
 }
 

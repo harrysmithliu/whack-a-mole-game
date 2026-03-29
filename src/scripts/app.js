@@ -3,6 +3,8 @@ const MOLE_SPAWN_INTERVAL = 530;
 const PRINCESS_SPAWN_PROBABILITY = 0.35;
 const HIT_RESET_DELAY = 1000;
 const STATUS_OVERLAY_DURATION = 1500;
+const START_COUNTDOWN_STEP_DURATION = 600;
+const START_COUNTDOWN_STEPS = ['3', '2', '1', 'Go'];
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
 
 const viewportStageElement = document.getElementById('viewport-stage');
@@ -26,7 +28,9 @@ const gameState = {
   spawnIntervalId: null,
   hitResetTimeoutId: null,
   statusOverlayTimeoutId: null,
+  startCountdownTimeoutId: null,
   isResolvingHit: false,
+  isStarting: false,
 };
 
 function init() {
@@ -55,21 +59,18 @@ function bindEvents() {
 }
 
 function startGame() {
-  if (gameState.isRunning) {
+  if (gameState.isRunning || gameState.isStarting) {
     return;
   }
 
   resetBoard();
   gameState.score = 0;
   gameState.timeLeft = GAME_DURATION;
-  gameState.isRunning = true;
+  gameState.isRunning = false;
+  gameState.isStarting = true;
   gameState.isResolvingHit = false;
   renderStats();
-  hideStatusOverlay();
-
-  showRandomMole();
-  gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
-  gameState.countdownIntervalId = window.setInterval(tick, 1000);
+  runStartCountdown();
 }
 
 function tick() {
@@ -84,6 +85,7 @@ function tick() {
 function endGame() {
   clearTimers();
   gameState.isRunning = false;
+  gameState.isStarting = false;
   gameState.isResolvingHit = false;
   resetBoard();
 
@@ -101,6 +103,7 @@ function resetGame() {
   gameState.score = 0;
   gameState.timeLeft = GAME_DURATION;
   gameState.isRunning = false;
+  gameState.isStarting = false;
   gameState.isResolvingHit = false;
   resetBoard();
   renderStats();
@@ -189,6 +192,11 @@ function clearTimers() {
     window.clearTimeout(gameState.statusOverlayTimeoutId);
     gameState.statusOverlayTimeoutId = null;
   }
+
+  if (gameState.startCountdownTimeoutId) {
+    window.clearTimeout(gameState.startCountdownTimeoutId);
+    gameState.startCountdownTimeoutId = null;
+  }
 }
 
 function clearSpawnInterval() {
@@ -213,12 +221,13 @@ function renderStats() {
   bestScoreElement.textContent = String(gameState.bestScore);
 }
 
-function showStatusOverlay(message, autoHide = true) {
+function showStatusOverlay(message, autoHide = true, variant = 'prompt') {
   if (!statusOverlayElement) {
     return;
   }
 
   statusOverlayElement.textContent = message;
+  statusOverlayElement.classList.toggle('is-countdown', variant === 'countdown');
   statusOverlayElement.classList.add('is-visible');
 
   if (gameState.statusOverlayTimeoutId) {
@@ -241,11 +250,42 @@ function hideStatusOverlay() {
   }
 
   statusOverlayElement.classList.remove('is-visible');
+  statusOverlayElement.classList.remove('is-countdown');
 
   if (gameState.statusOverlayTimeoutId) {
     window.clearTimeout(gameState.statusOverlayTimeoutId);
     gameState.statusOverlayTimeoutId = null;
   }
+}
+
+function runStartCountdown() {
+  hideStatusOverlay();
+  showCountdownStep(0);
+}
+
+function showCountdownStep(stepIndex) {
+  const stepText = START_COUNTDOWN_STEPS[stepIndex];
+
+  if (!stepText) {
+    hideStatusOverlay();
+    beginGameplay();
+    return;
+  }
+
+  showStatusOverlay(stepText, false, 'countdown');
+
+  gameState.startCountdownTimeoutId = window.setTimeout(() => {
+    showCountdownStep(stepIndex + 1);
+  }, START_COUNTDOWN_STEP_DURATION);
+}
+
+function beginGameplay() {
+  gameState.startCountdownTimeoutId = null;
+  gameState.isStarting = false;
+  gameState.isRunning = true;
+  showRandomMole();
+  gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
+  gameState.countdownIntervalId = window.setInterval(tick, 1000);
 }
 
 function updateViewportScale() {
