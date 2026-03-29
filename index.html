@@ -13,10 +13,6 @@
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <div>
-          <h1>Whack-a-Mole</h1>
-        </div>
-
         <div class="stats" aria-label="Game stats">
           <div class="stat-card">
             <span class="stat-label">Score</span>
@@ -33,15 +29,6 @@
         </div>
       </header>
 
-      <section class="controls" aria-label="Game controls">
-        <button id="start-button" class="button primary" type="button">
-          Start Game
-        </button>
-        <button id="reset-button" class="button secondary" type="button">
-          Reset
-        </button>
-      </section>
-
       <section class="game-panel">
         <div
           id="game-board"
@@ -57,11 +44,17 @@
           <div class="board-cell" aria-hidden="true"></div>
           <div class="board-cell" aria-hidden="true"></div>
           <div class="board-cell" aria-hidden="true"></div>
+          <div id="status-overlay" class="status-overlay" aria-live="polite" aria-atomic="true"></div>
         </div>
       </section>
 
-      <section class="status-panel" aria-live="polite">
-        <p id="status-text">Press “Start Game” to begin.</p>
+      <section class="controls" aria-label="Game controls">
+        <button id="start-button" class="button primary" type="button">
+          Start Game
+        </button>
+        <button id="reset-button" class="button secondary" type="button">
+          Reset
+        </button>
       </section>
     </main>
 

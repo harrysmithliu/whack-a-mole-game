@@ -2,12 +2,13 @@ const GAME_DURATION = 30;
 const MOLE_SPAWN_INTERVAL = 530;
 const PRINCESS_SPAWN_PROBABILITY = 0.35;
 const HIT_RESET_DELAY = 1000;
+const STATUS_OVERLAY_DURATION = 1500;
 const BEST_SCORE_KEY = 'whack-a-mole-best-score';
 
 const scoreElement = document.getElementById('score');
 const timerElement = document.getElementById('timer');
 const bestScoreElement = document.getElementById('best-score');
-const statusTextElement = document.getElementById('status-text');
+const statusOverlayElement = document.getElementById('status-overlay');
 const startButton = document.getElementById('start-button');
 const resetButton = document.getElementById('reset-button');
 const boardCells = Array.from(document.querySelectorAll('.board-cell'));
@@ -22,14 +23,15 @@ const gameState = {
   countdownIntervalId: null,
   spawnIntervalId: null,
   hitResetTimeoutId: null,
+  statusOverlayTimeoutId: null,
   isResolvingHit: false,
 };
 
 function init() {
   renderStats();
   resetBoard();
-  updateStatus('Press “Start Game” to begin.');
   bindEvents();
+  showStatusOverlay('Press Start Game', false);
 }
 
 function bindEvents() {
@@ -52,7 +54,7 @@ function startGame() {
   gameState.isRunning = true;
   gameState.isResolvingHit = false;
   renderStats();
-  updateStatus('Game started. Tap the visible mole!');
+  hideStatusOverlay();
 
   showRandomMole();
   gameState.spawnIntervalId = window.setInterval(showRandomMole, MOLE_SPAWN_INTERVAL);
@@ -80,7 +82,7 @@ function endGame() {
   }
 
   renderStats();
-  updateStatus(`Game over. Final score: ${gameState.score}.`);
+  showStatusOverlay('Game Over, Press Start Game to Play Again', false);
 }
 
 function resetGame() {
@@ -91,7 +93,7 @@ function resetGame() {
   gameState.isResolvingHit = false;
   resetBoard();
   renderStats();
-  updateStatus('Game reset. Press “Start Game” to play again.');
+  showStatusOverlay('Press Start Game', false);
 }
 
 function showRandomMole() {
@@ -130,10 +132,8 @@ function hitMole(index) {
 
   if (gameState.activeCharacterType === 'princess') {
     gameState.score -= 1;
-    updateStatus(`Oops! Princess hit. Score: ${gameState.score}.`);
   } else {
     gameState.score += 1;
-    updateStatus(`Nice! Score: ${gameState.score}.`);
   }
 
   renderStats();
@@ -173,6 +173,11 @@ function clearTimers() {
     window.clearTimeout(gameState.hitResetTimeoutId);
     gameState.hitResetTimeoutId = null;
   }
+
+  if (gameState.statusOverlayTimeoutId) {
+    window.clearTimeout(gameState.statusOverlayTimeoutId);
+    gameState.statusOverlayTimeoutId = null;
+  }
 }
 
 function clearSpawnInterval() {
@@ -197,8 +202,39 @@ function renderStats() {
   bestScoreElement.textContent = String(gameState.bestScore);
 }
 
-function updateStatus(message) {
-  statusTextElement.textContent = message;
+function showStatusOverlay(message, autoHide = true) {
+  if (!statusOverlayElement) {
+    return;
+  }
+
+  statusOverlayElement.textContent = message;
+  statusOverlayElement.classList.add('is-visible');
+
+  if (gameState.statusOverlayTimeoutId) {
+    window.clearTimeout(gameState.statusOverlayTimeoutId);
+    gameState.statusOverlayTimeoutId = null;
+  }
+
+  if (!autoHide) {
+    return;
+  }
+
+  gameState.statusOverlayTimeoutId = window.setTimeout(() => {
+    hideStatusOverlay();
+  }, STATUS_OVERLAY_DURATION);
+}
+
+function hideStatusOverlay() {
+  if (!statusOverlayElement) {
+    return;
+  }
+
+  statusOverlayElement.classList.remove('is-visible');
+
+  if (gameState.statusOverlayTimeoutId) {
+    window.clearTimeout(gameState.statusOverlayTimeoutId);
+    gameState.statusOverlayTimeoutId = null;
+  }
 }
 
 init();
