@@ -93,6 +93,10 @@ function bindEvents() {
   }
 
   document.addEventListener('pointerdown', handleDocumentPointerDown);
+  document.addEventListener('gesturestart', blockGestureZoom);
+  document.addEventListener('gesturechange', blockGestureZoom);
+  document.addEventListener('gestureend', blockGestureZoom);
+  document.addEventListener('touchmove', blockMultiTouchZoom, { passive: false });
 }
 
 function startGame() {
@@ -296,6 +300,16 @@ function handleDocumentPointerDown(event) {
   }
 
   hideDifficultyMenu();
+}
+
+function blockGestureZoom(event) {
+  event.preventDefault();
+}
+
+function blockMultiTouchZoom(event) {
+  if (event.touches.length > 1) {
+    event.preventDefault();
+  }
 }
 
 function resetBoard() {

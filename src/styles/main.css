@@ -17,6 +17,15 @@
 }
 
 html,
+body,
+button,
+.game-board,
+.board-cell,
+.difficulty-option {
+  touch-action: manipulation;
+}
+
+html,
 body {
   margin: 0;
   padding: 0;
@@ -30,6 +39,7 @@ body {
 body {
   min-height: 100dvh;
   overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .viewport-stage {
@@ -46,6 +56,8 @@ img {
 
 button {
   font: inherit;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .app-shell {
@@ -203,6 +215,8 @@ button {
   border-radius: 22px;
   overflow: visible;
   cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .board-cell::before,
