@@ -4,7 +4,7 @@ A bright, playful browser game built with plain HTML, CSS, and JavaScript. This 
 
 ## Play Online
 
-**Live Demo:** `https://harrysmithliu.github.io/whack-a-mole-game/`
+**Game Link:** [https://harrysmithliu.github.io/whack-a-mole-game/](https://harrysmithliu.github.io/whack-a-mole-game/)
 
 **Built from zero with AI assistance, this project was fully recreated based on implementation experience from an earlier version I had completed before.**
 
